@@ -17,7 +17,7 @@ trait CustomHttpRequest
     ) {
         try {
             $client = new Client([
-                'base_uri' => $this->base_uri,
+                'base_uri' => $this->baseUri,
             ]);
 
             if (method_exists($this, 'resolveAuthorization')) {
@@ -29,13 +29,13 @@ trait CustomHttpRequest
                 "headers" => $headers,
                 "query"=> $params
             ]);
-
+    
             $response = $response->getBody()->getContents();
 
             if (method_exists($this, 'decodeResponse')) {
                 $response = $this->decodeResponse($response);
             }
-
+            
             return $response;
         } catch (\Exception $e) {
             //
