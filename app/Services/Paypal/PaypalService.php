@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Paypal;
 
 use App\Traits\CustomHttpRequest;
 
