@@ -13,9 +13,10 @@ class CurrencySeeder extends Seeder
     public function run()
     {
         $currencies = [
+            "brl",
             "usd",
             "eur",
-            "gbp"
+            "gbp",
         ];
         
         foreach ($currencies as $currency) {

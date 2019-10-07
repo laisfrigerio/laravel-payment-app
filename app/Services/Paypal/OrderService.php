@@ -33,7 +33,7 @@ class OrderService extends PaypalService
     public function store(Request $request)
     {
         $currency = $request->get("currency");
-        $value    =  $request->get("value");
+        $value    = $request->get("value");
 
         $order =  $this->makeRequest(
             "/v2/checkout/orders",
@@ -61,7 +61,6 @@ class OrderService extends PaypalService
             true
         );
     
-        dd($order);
         $orderLinks = collect($order->links);
         $approve =$orderLinks->where("rel", "approve")->first();
         return redirect($approve->href);
