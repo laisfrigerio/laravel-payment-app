@@ -20,6 +20,7 @@ class OrderService extends PaypalService
      */
     public function __construct()
     {
+        // call parent construct to set base uri, client id and client secret
         parent::__construct();
     }
     
@@ -64,6 +65,35 @@ class OrderService extends PaypalService
         $orderLinks = collect($order->links);
         $approve =$orderLinks->where("rel", "approve")->first();
         return redirect($approve->href);
+    }
+    
+    public function createOrder($currency, $value)
+    {
+        return $this->makeRequest(
+            "/v2/checkout/orders",
+            "POST",
+            [],
+            [
+                'intent' => 'CAPTURE',
+                'purchase_units' => [
+                    [
+                        'amount' => [
+                            'currency_code' => strtoupper($currency),
+                            'value' => $value,
+                        ],
+                    ]
+                ],
+                'application_context' => [
+                    'brand_name' => config("app.name"),
+                    'shipping_reference' => 'NO_SHIPPING',
+                    'user_account' => 'PAY_NOW',
+                    'return_url' => route('approval'),
+                    'cancel_url' => route('cancelled'),
+                ],
+            ],
+            [],
+            true
+        );
     }
     
     public function details(string $orderId)
