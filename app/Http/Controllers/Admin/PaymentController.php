@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\Paypal\OrderService;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -21,8 +22,20 @@ class PaymentController extends Controller
         ];
         
         $request->validate($rules);
-        
-        return $request->all();
+
+        $paymentPlatform = resolve(OrderService::class);
+        return $paymentPlatform->store($request);
+    }
+    
+    public function details(string $orderId)
+    {
+        $paymentPlatform = resolve(OrderService::class);
+        return $paymentPlatform->details($orderId);
+    }
+    
+    public function capture()
+    {
+    
     }
     
     public function approval()

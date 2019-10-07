@@ -3,6 +3,7 @@
 namespace App\Services\Paypal;
 
 use App\Traits\CustomHttpRequest;
+use Illuminate\Http\Request;
 
 /**
  * Class responsible for control de paypal orders
@@ -19,20 +20,21 @@ class OrderService extends PaypalService
      */
     public function __construct()
     {
-        // call parent construct to set base uri, client id and client secret
         parent::__construct();
     }
     
     /**
      * Create new order on paypal
      *
-     * @param $value
-     * @param $currency
-     * @return bool|mixed|\Psr\Http\Message\ResponseInterface|string
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function store($value, $currency)
+    public function store(Request $request)
     {
-        return $this->makeRequest(
+        $currency = $request->get("currency");
+        $value    =  $request->get("value");
+
+        $order =  $this->makeRequest(
             "/v2/checkout/orders",
             "POST",
             [],
@@ -55,6 +57,39 @@ class OrderService extends PaypalService
                 ],
             ],
             [],
+            true
+        );
+    
+        dd($order);
+        $orderLinks = collect($order->links);
+        $approve =$orderLinks->where("rel", "approve")->first();
+        return redirect($approve->href);
+    }
+    
+    public function details(string $orderId)
+    {
+        return $this->makeRequest(
+            "/v2/checkout/orders/{$orderId}",
+            "POST",
+            [],
+            [],
+            [
+                'Content-Type' => 'application/json'
+            ],
+            true
+        );
+    }
+    
+    public function capture(string $approvalId)
+    {
+        return $this->makeRequest(
+            "/v2/checkout/orders/${$approvalId}/capture",
+            "POST",
+            [],
+            [],
+            [
+                'Content-Type' => 'application/json'
+            ],
             true
         );
     }

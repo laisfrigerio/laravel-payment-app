@@ -2,9 +2,10 @@
 
 namespace App\Services\Paypal;
 
+use Illuminate\Http\Request;
 use App\Traits\CustomHttpRequest;
 
-class PaypalService
+abstract class PaypalService
 {
     use CustomHttpRequest;
     
@@ -26,6 +27,8 @@ class PaypalService
     public function __construct()
     {
         $this->baseUri = config("services.paypal.base_uri");
+        var_dump("construct paypal");
+        var_dump(config("services.paypal.base_uri"));
         $this->clientSecret = config("services.paypal.client_secret");
         $this->clientId = config("services.paypal.client_id");
     }

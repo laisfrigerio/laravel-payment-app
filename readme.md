@@ -1,3 +1,3 @@
 # Laravel Payment
 
-Laravel project to process payments using pratforms as Paypal and Stripe
+Laravel project to process payments using platforms as Paypal and Stripe

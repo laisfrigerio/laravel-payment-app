@@ -15,6 +15,8 @@ trait CustomHttpRequest
         array $headers = [],
         bool $isJson = false
     ) {
+        var_dump("baseUri");
+        var_dump($this->baseUri);
         try {
             $client = new Client([
                 'base_uri' => $this->baseUri,
@@ -38,9 +40,9 @@ trait CustomHttpRequest
             
             return $response;
         } catch (\Exception $e) {
-            //
+            var_dump($e);
         } catch (GuzzleException $e) {
-            //
+            var_dump($e);
         }
 
         return false;
