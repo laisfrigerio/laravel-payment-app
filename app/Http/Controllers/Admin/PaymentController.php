@@ -33,9 +33,10 @@ class PaymentController extends Controller
         return $paymentPlatform->details($orderId);
     }
     
-    public function capture()
+    public function capture($orderId)
     {
-    
+        $paymentPlatform = resolve(OrderService::class);
+        return $paymentPlatform->capture($orderId);
     }
     
     public function approval()

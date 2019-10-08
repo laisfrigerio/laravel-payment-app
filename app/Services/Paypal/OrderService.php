@@ -123,15 +123,16 @@ class OrderService extends PaypalService
     
     public function capture(string $approvalId)
     {
+        var_dump("approvalId");
+        var_dump($approvalId);
         return $this->makeRequest(
-            "/v2/checkout/orders/${$approvalId}/capture",
+            "/v2/checkout/orders/{$approvalId}/capture",
             "POST",
             [],
             [],
             [
                 'Content-Type' => 'application/json'
-            ],
-            true
+            ]
         );
     }
 }
