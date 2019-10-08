@@ -33,16 +33,18 @@ class PaymentController extends Controller
         return $paymentPlatform->details($orderId);
     }
     
-    public function capture($orderId)
+    public function approval(Request $request)
     {
+        $orderId = $request->get("token");
         $paymentPlatform = resolve(OrderService::class);
-        return $paymentPlatform->capture($orderId);
+        $response = $paymentPlatform->capture($orderId);
+        
+        if ($response === FALSE) {
+            return redirect("home")->withErrors("We cannot capture the payment. Try again, please.");
+        }
+        return redirect()->route("home");
     }
     
-    public function approval()
-    {
-        //
-    }
     public function cancelled()
     {
         //

@@ -23,7 +23,6 @@ Route::namespace('Admin')->group(function () {
     
     Route::prefix("payments")->group(function () {
         Route::post('/pay', 'PaymentController@pay')->name('pay');
-        Route::get('/capture/{orderId}', 'PaymentController@capture')->name('capture');
         Route::get('/details/{orderId}', 'PaymentController@details')->name('details');
         Route::get('/approval', 'PaymentController@approval')->name('approval');
         Route::get('/cancelled', 'PaymentController@cancelled')->name('cancelled');
