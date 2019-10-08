@@ -18,13 +18,13 @@ class PaymentController extends Controller
         $rules = [
             'value'            => ['required', 'numeric', 'min:5'],
             'currency'         => ['required', 'exists:currencies,iso'],
-            'payment-platform' => ['required', 'exists:payment_platforms,id'],
+            'payment_platform' => ['required', 'exists:payment_platforms,id'],
         ];
         
         $request->validate($rules);
 
         $paymentPlatform = resolve(OrderService::class);
-        return $paymentPlatform->store($request);
+        return $paymentPlatform->store($request->all());
     }
     
     public function details(string $orderId)

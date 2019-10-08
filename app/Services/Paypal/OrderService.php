@@ -6,7 +6,6 @@ use App\Models\Currency;
 use App\Models\Order;
 use App\Models\PaymentPlatform;
 use App\Traits\CustomHttpRequest;
-use Illuminate\Http\Request;
 
 /**
  * Class responsible for control de paypal orders
@@ -30,13 +29,14 @@ class OrderService extends PaypalService
     /**
      * Create new order on paypal
      *
-     * @param Request $request
+     * @param array $data
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function store(Request $request)
+    public function store(array $data)
     {
-        $currency = $request->get("currency");
-        $value    = $request->get("value");
+        $paymentPlatform = $data["payment_platform"];
+        $currency        = $data["currency"];
+        $value           = $data["value"];
 
         $order =  $this->makeRequest(
             "/v2/checkout/orders",
@@ -70,41 +70,12 @@ class OrderService extends PaypalService
         Order::create([
             "id" => $order->id,
             "currency_id" => Currency::find($currency)->iso,
-            "payment_platform_id" => PaymentPlatform::find(1)->id,
+            "payment_platform_id" => PaymentPlatform::find($paymentPlatform)->id,
             "approval_link" => $approve->href,
             "value" => str_replace(",", ".", $value),
         ]);
         
         return redirect($approve->href);
-    }
-    
-    public function createOrder($currency, $value)
-    {
-        return $this->makeRequest(
-            "/v2/checkout/orders",
-            "POST",
-            [],
-            [
-                'intent' => 'CAPTURE',
-                'purchase_units' => [
-                    [
-                        'amount' => [
-                            'currency_code' => strtoupper($currency),
-                            'value' => $value,
-                        ],
-                    ]
-                ],
-                'application_context' => [
-                    'brand_name' => config("app.name"),
-                    'shipping_reference' => 'NO_SHIPPING',
-                    'user_account' => 'PAY_NOW',
-                    'return_url' => route('approval'),
-                    'cancel_url' => route('cancelled'),
-                ],
-            ],
-            [],
-            true
-        );
     }
     
     public function details(string $orderId)
@@ -121,12 +92,10 @@ class OrderService extends PaypalService
         );
     }
     
-    public function capture(string $approvalId)
+    public function capture(string $orderId)
     {
-        var_dump("approvalId");
-        var_dump($approvalId);
         return $this->makeRequest(
-            "/v2/checkout/orders/{$approvalId}/capture",
+            "/v2/checkout/orders/{$orderId}/capture",
             "POST",
             [],
             [],

@@ -45,7 +45,7 @@
                                                 <input
                                                 id="platform-img"
                                                 type="radio"
-                                                name="payment-platform"
+                                                name="payment_platform"
                                                 value="{{ $platform->id }}"
                                                 required
                                                 >
