@@ -2,6 +2,9 @@
 
 namespace App\Services\Paypal;
 
+use App\Models\Currency;
+use App\Models\Order;
+use App\Models\PaymentPlatform;
 use App\Traits\CustomHttpRequest;
 use Illuminate\Http\Request;
 
@@ -51,8 +54,8 @@ class OrderService extends PaypalService
                 ],
                 'application_context' => [
                     'brand_name' => config("app.name"),
-                    'shipping_reference' => 'NO_SHIPPING',
-                    'user_account' => 'PAY_NOW',
+                    'shipping_preference' => 'NO_SHIPPING',
+                    'user_action' => 'PAY_NOW',
                     'return_url' => route('approval'),
                     'cancel_url' => route('cancelled'),
                 ],
@@ -63,6 +66,15 @@ class OrderService extends PaypalService
     
         $orderLinks = collect($order->links);
         $approve =$orderLinks->where("rel", "approve")->first();
+    
+        Order::create([
+            "id" => $order->id,
+            "currency_id" => Currency::find($currency)->iso,
+            "payment_platform_id" => PaymentPlatform::find(1)->id,
+            "approval_link" => $approve->href,
+            "value" => str_replace(",", ".", $value),
+        ]);
+        
         return redirect($approve->href);
     }
     
