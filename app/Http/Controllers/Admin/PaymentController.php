@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\Paypal\OrderService;
+use App\Services\Paypal\OrderService as PaypalOrderService;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -23,30 +23,33 @@ class PaymentController extends Controller
         
         $request->validate($rules);
 
-        $paymentPlatform = resolve(OrderService::class);
+        $paymentPlatform = resolve(PaypalOrderService::class);
         return $paymentPlatform->store($request->all());
     }
     
     public function details(string $orderId)
     {
-        $paymentPlatform = resolve(OrderService::class);
+        $paymentPlatform = resolve(PaypalOrderService::class);
         return $paymentPlatform->details($orderId);
     }
     
     public function approval(Request $request)
     {
         $orderId = $request->get("token");
-        $paymentPlatform = resolve(OrderService::class);
+        $paymentPlatform = resolve(PaypalOrderService::class);
         $response = $paymentPlatform->capture($orderId);
         
-        if ($response === FALSE) {
+        if ($response === false) {
             return redirect("home")->withErrors("We cannot capture the payment. Try again, please.");
         }
+        
         return redirect()->route("home");
     }
     
     public function cancelled()
     {
-        //
+        return redirect()
+            ->route("home")
+            ->withErrors("You cancelled the payment.");
     }
 }
