@@ -82,7 +82,7 @@ class OrderService extends PaypalService
     {
         return $this->makeRequest(
             "/v2/checkout/orders/{$orderId}",
-            "POST",
+            "GET",
             [],
             [],
             [
